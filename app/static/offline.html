@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Castle - Offline</title>
+    <style>
+        @font-face {
+            font-family: 'MainFont';
+            src: url('/static/fonts/Richardson Brand Accelerator.otf') format('opentype');
+            font-display: swap;
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'SecondaryFont';
+            src: url('/static/fonts/oxanium-vrb.ttf') format('truetype');
+            font-display: swap;
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'SecondaryFont', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 90%;
+            width: 600px;
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-family: 'MainFont', sans-serif;
+            color: #3b82f6;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 25px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #4b5563;
+        }
+
+        .status {
+            display: inline-block;
+            background-color: #ef4444;
+            color: white;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+        }
+
+        .info {
+            background-color: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-top: 20px;
+            color: #6b7280;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #3b82f6;
+            color: white;
+            font-weight: bold;
+            padding: 12px 25px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: background-color 0.2s;
+        }
+
+        .button:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="/static/logo.png" alt="Castle Logo" class="logo">
+        <h1>You're Offline</h1>
+        <div class="status">Offline Mode</div>
+        <p>You are currently offline, but don't worry! You can still use the scouting app's features that have been saved for offline use.</p>
+        
+        <p>What you can do while offline:</p>
+        <ul style="text-align: left; margin-bottom: 20px;">
+            <li>Access previously visited pages</li>
+            <li>Submit match scouting data (will sync when you're back online)</li>
+            <li>View cached team information</li>
+        </ul>
+        
+        <a href="/scout" class="button">Go to Scouting</a>
+        
+        <div class="info">
+            Your data will be stored locally and will automatically sync when you reconnect to the internet.
+        </div>
+    </div>
+
+    <script>
+        // Check if we're still offline periodically
+        function checkOnlineStatus() {
+            if (navigator.onLine) {
+                document.location.reload();
+            }
+        }
+        
+        // Check every 5 seconds
+        setInterval(checkOnlineStatus, 5000);
+        
+        // Also check when the online event fires
+        window.addEventListener('online', function() {
+            document.location.reload();
+        });
+    </script>
+</body>
+</html> 

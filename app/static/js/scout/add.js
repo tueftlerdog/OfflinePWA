@@ -391,6 +391,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission handling
     const form = document.getElementById('scoutingForm');
     if (form) {
+        // Add a data attribute to indicate where to redirect after offline submission
+        form.dataset.successRedirect = '/scouting/home';
+        
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -406,7 +409,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Please fill in all required fields');
                 return;
             }
+            
+            // Check if we're offline
+            if (window.offlineManager && !window.offlineManager.isOnline) {
+                try {
+                    // Gather all form data
+                    const formData = new FormData(form);
+                    const data = {};
+                    
+                    // Convert FormData to JSON object
+                    for (const [key, value] of formData.entries()) {
+                        data[key] = value;
+                    }
+                    
+                    // Add metadata
+                    data._offlineSubmitted = true;
+                    data._submittedAt = new Date().toISOString();
+                    data._formAction = form.action;
+                    data._formType = 'scout_match';
+                    
+                    // Store in IndexedDB
+                    const result = await window.offlineManager.storeScoutingData(data);
+                    
+                    window.offlineManager.showToast('Your match scouting data has been saved offline and will be submitted when you reconnect.', 'success');
+                    
+                    // Redirect to the scouting home page
+                    setTimeout(() => {
+                        window.location.href = '/scouting/home';
+                    }, 1500);
+                    
+                    return;
+                } catch (error) {
+                    console.error('Error storing form data offline:', error);
+                    window.offlineManager.showToast('Failed to save your data offline. Please try again.', 'error');
+                    return;
+                }
+            }
 
+            // We're online, proceed with normal submission
             try {
                 const response = await fetch(`/scouting/check_team?team=${teamNumber}&event=${eventCode}&match=${matchNumber}`);
                 const data = await response.json();
@@ -419,6 +459,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.submit();
             } catch (error) {
                 console.error('Error checking team:', error);
+                
+                // If we can't check if the team exists, we might be offline
+                // Handle it with offline manager if available
+                if (window.offlineManager) {
+                    // Try offline submission as a fallback
+                    try {
+                        const formData = new FormData(form);
+                        const data = {};
+                        
+                        for (const [key, value] of formData.entries()) {
+                            data[key] = value;
+                        }
+                        
+                        data._offlineSubmitted = true;
+                        data._submittedAt = new Date().toISOString();
+                        data._formAction = form.action;
+                        data._formType = 'scout_match';
+                        
+                        const result = await window.offlineManager.storeScoutingData(data);
+                        
+                        window.offlineManager.showToast('Network error detected. Your data has been saved offline and will be submitted when you reconnect.', 'warning');
+                        
+                        setTimeout(() => {
+                            window.location.href = '/scouting/home';
+                        }, 1500);
+                        
+                        return;
+                    } catch (offlineError) {
+                        console.error('Error with offline fallback:', offlineError);
+                    }
+                }
+                
+                // Last resort - try direct submission
                 form.submit();
             }
         });

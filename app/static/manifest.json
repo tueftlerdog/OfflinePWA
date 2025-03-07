@@ -3,7 +3,7 @@
   "short_name": "Castle",
   "description": "FRC Team Scouting App",
   "start_url": "/",
-  "display": "fullscreen",
+  "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
   "id": "com.team334.castle",
@@ -49,11 +49,33 @@
     {
       "src": "/static/icons/icon-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  
+  "shortcuts": [
+    {
+      "name": "Match Scouting",
+      "short_name": "Match",
+      "description": "Start match scouting",
+      "url": "/scout/match",
+      "icons": [{ "src": "/static/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pit Scouting",
+      "short_name": "Pit",
+      "description": "Start pit scouting",
+      "url": "/scout/pit",
+      "icons": [{ "src": "/static/icons/icon-192x192.png", "sizes": "192x192" }]
     }
   ],
   
   "permissions": ["notifications"],
   "gcm_sender_id": "103953800507",
-  "gcm_user_visible_only": true
+  "gcm_user_visible_only": true,
+  
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "capture_links": "existing-client-navigate"
 } 
